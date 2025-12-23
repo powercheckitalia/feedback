@@ -301,17 +301,14 @@
                 timestamp: Date.now()
             };
 
-            try {
-                const responseId = `response_${Date.now()}`;
-                await window.storage.set(responseId, JSON.stringify(formData), true);
-                
-                document.getElementById('formView').classList.add('hidden');
-                document.getElementById('successView').classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } catch (error) {
-                alert('Errore nel salvataggio. Riprova!');
-                console.error(error);
-            }
+    window.open(
+  "https://docs.google.com/forms/d/e/1FAIpQLScYEbmase9WYOjUMaH81VL7SpLoAQ5y-ZGJ-Vu5y3SVlzjavQ/viewform?usp=dialog",
+  "_blank"
+);
+
+document.getElementById('formView').classList.add('hidden');
+document.getElementById('successView').classList.remove('hidden');
+window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function resetForm() {
