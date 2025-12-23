@@ -266,39 +266,15 @@
         }
 
         async function submitForm() {
-            const scuola = document.getElementById('scuola').value;
-            const classe = document.getElementById('classe').value;
-            const data = document.getElementById('data').value;
-            const genere = document.querySelector('input[name="genere"]:checked');
+             const googleFormUrl =
+      "https://docs.google.com/forms/d/e/1FAIpQLScYEbmase9WYOjUMaH81VL7SpLoAQ5y-ZGJ-Vu5y3SVlzjavQ/viewform";
 
-            if (!scuola || !classe || !data || !genere) {
-                alert('Compila tutti i campi obbligatori!');
-                return;
-            }
+    window.open(googleFormUrl, "_blank");
 
-            const ratings = [];
-            for (let i = 0; i < questions.length; i++) {
-                const rating = document.querySelector(`input[name="q${i}"]:checked`);
-                if (!rating) {
-                    alert(`Rispondi alla domanda ${i + 1}!`);
-                    return;
-                }
-                ratings.push(rating.value);
-            }
+    document.getElementById('formView').classList.add('hidden');
+    document.getElementById('successView').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            const openAnswers = [];
-            for (let i = 0; i < openQuestions.length; i++) {
-                openAnswers.push(document.getElementById(`open${i}`).value);
-            }
-
-            const formData = {
-                scuola,
-                classe,
-                data,
-                genere: genere.value,
-                ratings,
-                openAnswers,
-                timestamp: Date.now()
             };
 
             try {
