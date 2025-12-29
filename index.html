@@ -301,10 +301,25 @@
                 timestamp: Date.now()
             };
 
-    window.open(
-  "https://docs.google.com/forms/d/e/1FAIpQLScYEbmase9WYOjUMaH81VL7SpLoAQ5y-ZGJ-Vu5y3SVlzjavQ/viewform?usp=dialog",
-  "_blank"
-);
+  const ENDPOINT_URL =
+  "https://script.google.com/macros/s/AKfycbyr9y8ErZ46dBj6UHVkD1UShjL6QkRLtE2z8ARFuomq08SMyXj9O3r_Q8Dbfh98DBQJ/exec";
+
+const payload = {
+  scuola,
+  classe,
+  data,
+  genere: genere.value,
+  ratings,
+  openAnswers,
+  userAgent: navigator.userAgent
+};
+
+await fetch(ENDPOINT_URL, {
+  method: "POST",
+  mode: "no-cors",
+  headers: { "Content-Type": "text/plain;charset=utf-8" },
+  body: JSON.stringify(payload)
+});
 
 document.getElementById('formView').classList.add('hidden');
 document.getElementById('successView').classList.remove('hidden');
