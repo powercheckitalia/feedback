@@ -291,15 +291,6 @@
                 openAnswers.push(document.getElementById(`open${i}`).value);
             }
 
-            const formData = {
-                scuola,
-                classe,
-                data,
-                genere: genere.value,
-                ratings,
-                openAnswers,
-                timestamp: Date.now()
-            };
 const submissionId =
   "pc_" + Date.now() + "_" + Math.random().toString(16).slice(2);
   const ENDPOINT_URL =
@@ -317,17 +308,22 @@ const payload = {
   lang: "de"
 };
 
-await fetch(ENDPOINT_URL, {
-  method: "POST",
-  mode: "no-cors",
-  headers: { "Content-Type": "text/plain;charset=utf-8" },
-  body: JSON.stringify(payload)
-});
+try {
+  await fetch(ENDPOINT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  });
 
-document.getElementById('formView').classList.add('hidden');
-document.getElementById('successView').classList.remove('hidden');
-window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+  document.getElementById('formView').classList.add('hidden');
+  document.getElementById('successView').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+} catch (err) {
+  console.error(err);
+  alert("Senden fehlgeschlagen. Bitte versuche es erneut.");
+}
 
         function resetForm() {
             document.getElementById('successView').classList.add('hidden');
