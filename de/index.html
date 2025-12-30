@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,7 +48,7 @@
                         <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
-                        Dashboard Risposte
+                        Antworten - Dashboard 
                     </h2>
                     <button onclick="showForm()" class="text-orange-500 hover:text-orange-600 font-semibold">
                         ← Zurück zum Formular
@@ -67,22 +67,22 @@
                         <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                         </svg>
-                        <div class="text-lg font-bold">Esporta CSV</div>
-                        <div class="text-sm opacity-90">Scarica tutti i dati</div>
+                        <div class="text-lg font-bold">CSV exportieren</div>
+                        <div class="text-sm opacity-90">Alle Daten herunterladen</div>
                     </button>
                     <button onclick="loadResponses()" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 hover:from-blue-600 hover:to-blue-700 transition">
-                        <div class="text-lg font-bold">Aggiorna</div>
-                        <div class="text-sm opacity-90">Ricarica dati</div>
+                        <div class="text-lg font-bold">Aktualisieren</div>
+                        <div class="text-sm opacity-90">Daten neu laden</div>
                     </button>
                 </div>
 
                 <div id="statsContainer" class="bg-orange-50 rounded-xl p-6 mb-6 hidden">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Media Valutazioni</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Durchschnittliche Bewertungen</h3>
                     <div id="statsGrid" class="grid md:grid-cols-2 gap-4"></div>
                 </div>
 
                 <div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Risposte Recenti</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Neueste Antworten </h3>
                     <div id="responsesList"></div>
                 </div>
             </div>
@@ -102,7 +102,7 @@
                     </button>
                 </div>
                 <div class="mt-6 bg-white/20 backdrop-blur-sm rounded-xl p-4">
-                    <p class="text-sm mb-2">📱 eile dieses Formular über den QR-Code:</p>
+                    <p class="text-sm mb-2">📱 Teile dieses Formular über den QR-Code:</p>
                     <img id="qrCode" src="" alt="QR Code" class="mx-auto rounded-lg bg-white p-2">
                 </div>
             </div>
@@ -130,15 +130,15 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-3">Geschlecht *</label>
                         <div class="flex gap-4 flex-wrap">
                             <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="genere" value="Maschio" required class="w-5 h-5 text-orange-500">
+                                <input type="radio" name="genere" value="Männlich" required class="w-5 h-5 text-orange-500">
                                 <span class="ml-2 text-gray-700">Männlich</span>
                             </label>
                             <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="genere" value="Femmina" required class="w-5 h-5 text-orange-500">
+                                <input type="radio" name="genere" value="Weiblich" required class="w-5 h-5 text-orange-500">
                                 <span class="ml-2 text-gray-700">Weiblich</span>
                             </label>
                             <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="genere" value="Preferisco non indicarlo" required class="w-5 h-5 text-orange-500">
+                                <input type="radio" name="genere" value="Möchte ich nicht angeben" required class="w-5 h-5 text-orange-500">
                                 <span class="ml-2 text-gray-700">Möchte ich nicht angeben</span>
                             </label>
                         </div>
@@ -217,7 +217,7 @@
         });
 
         function generateQRCode() {
-            const url = "https://powercheckitalia.github.io/feedback/";
+            const url = "https://powercheckitalia.github.io/feedback/de/";
             document.getElementById('qrCode').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&bgcolor=FF6B35&color=FFFFFF`;
         }
 
@@ -292,10 +292,10 @@
             }
 
             const formData = {
-                Schule,
-                Klasse,
-                Datum,
-                Geschlecht: genere.value,
+                scuola,
+                classe,
+                data,
+                genere: genere.value,
                 ratings,
                 openAnswers,
                 timestamp: Date.now()
@@ -306,13 +306,15 @@ const submissionId =
   "https://script.google.com/macros/s/AKfycbyr9y8ErZ46dBj6UHVkD1UShjL6QkRLtE2z8ARFuomq08SMyXj9O3r_Q8Dbfh98DBQJ/exec";
 
 const payload = {
-  Schule,
-  Klasse,
-  Datum,
-  Geschlecht: genere.value,
+  submissionId,
+  scuola,
+  classe,
+  data,
+  genere: genere.value,
   ratings,
   openAnswers,
-  userAgent: navigator.userAgent
+  userAgent: navigator.userAgent,
+  lang: "de"
 };
 
 await fetch(ENDPOINT_URL, {
@@ -441,17 +443,17 @@ window.scrollTo({ top: 0, behavior: 'smooth' });
                     responses = responses.filter(r => r !== null);
                     
                     const headers = [
-                        'Data Compilazione', 'Schule', 'Klasse', 'Datum', 'Geschlecht',
+                        'Ausfüllungsdatum', 'Schule', 'Klasse', 'Datum', 'Geschlecht',
                         ...questions.map((_, i) => `Q${i + 1}`),
-                        ...openQuestions.map((_, i) => `Aperta ${i + 1}`)
+                        ...openQuestions.map((_, i) => `Offen ${i + 1}`)
                     ];
 
                     const rows = responses.map(r => [
                         new Date(r.timestamp).toLocaleString('it-IT'),
-                        r.Schule,
-                        r.Klasse,
-                        r.Data,
-                        r.Geschlecht,
+                        r.scuola,
+                        r.classe,
+                        r.data,
+                        r.genere,
                         ...r.ratings,
                         ...r.openAnswers
                     ]);
