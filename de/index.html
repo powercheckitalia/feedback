@@ -61,7 +61,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
                         <div class="text-3xl font-bold" id="totalResponses">0</div>
-                        <div class="text-sm opacity-90">Risposte Totali</div>
+                        <div class="text-sm opacity-90">Antworten Gesamt</div>
                     </div>
                     <button onclick="exportCSV()" class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 hover:from-green-600 hover:to-green-700 transition">
                         <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +82,7 @@
                 </div>
 
                 <div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Neueste Antworten </h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Neueste Antworten</h3>
                     <div id="responsesList"></div>
                 </div>
             </div>
@@ -291,39 +291,52 @@
                 openAnswers.push(document.getElementById(`open${i}`).value);
             }
 
-const submissionId =
-  "pc_" + Date.now() + "_" + Math.random().toString(16).slice(2);
-  const ENDPOINT_URL =
-  "https://script.google.com/macros/s/AKfycbyr9y8ErZ46dBj6UHVkD1UShjL6QkRLtE2z8ARFuomq08SMyXj9O3r_Q8Dbfh98DBQJ/exec";
+            const formData = {
+                scuola,
+                classe,
+                data,
+                genere: genere.value,
+                ratings,
+                openAnswers,
+                timestamp: Date.now(),
+                lang: "de"
+            };
 
-const payload = {
-  submissionId,
-  scuola,
-  classe,
-  data,
-  genere: genere.value,
-  ratings,
-  openAnswers,
-  userAgent: navigator.userAgent,
-  lang: "de"
-};
+            try {
+                // Salva nel storage locale
+                const submissionId = "response_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+                await window.storage.set(submissionId, JSON.stringify(formData), true);
+                
+                // Invia al Google Sheet
+                const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbyr9y8ErZ46dBj6UHVkD1UShjL6QkRLtE2z8ARFuomq08SMyXj9O3r_Q8Dbfh98DBQJ/exec";
+                
+                const payload = {
+                    submissionId,
+                    scuola,
+                    classe,
+                    data,
+                    genere: genere.value,
+                    ratings,
+                    openAnswers,
+                    userAgent: navigator.userAgent,
+                    lang: "de"
+                };
 
-try {
-  await fetch(ENDPOINT_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(payload)
-  });
+                await fetch(ENDPOINT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
 
-  document.getElementById('formView').classList.add('hidden');
-  document.getElementById('successView').classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-} catch (err) {
-  console.error(err);
-  alert("Senden fehlgeschlagen. Bitte versuche es erneut.");
-}
+                document.getElementById('formView').classList.add('hidden');
+                document.getElementById('successView').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                console.error('Errore durante l\'invio:', error);
+                alert('Senden fehlgeschlagen. Bitte versuche es erneut.');
+            }
+        }
 
         function resetForm() {
             document.getElementById('successView').classList.add('hidden');
@@ -415,7 +428,7 @@ try {
                             <span class="font-semibold text-gray-800">${r.scuola}</span>
                             <span class="text-gray-500 ml-2">• ${r.classe}</span>
                         </div>
-                        <span class="text-sm text-gray-500">${new Date(r.timestamp).toLocaleDateString('it-IT')}</span>
+                        <span class="text-sm text-gray-500">${new Date(r.timestamp).toLocaleDateString('de-DE')}</span>
                     </div>
                     <div class="flex gap-2 flex-wrap">
                         ${r.ratings.map((rating, i) => `
@@ -429,7 +442,7 @@ try {
         function exportCSV() {
             window.storage.list('response_', true).then(result => {
                 if (!result || !result.keys || result.keys.length === 0) {
-                    alert('Nessuna risposta da esportare!');
+                    alert('Keine Antworten zum Exportieren vorhanden!');
                     return;
                 }
 
@@ -445,7 +458,7 @@ try {
                     ];
 
                     const rows = responses.map(r => [
-                        new Date(r.timestamp).toLocaleString('it-IT'),
+                        new Date(r.timestamp).toLocaleString('de-DE'),
                         r.scuola,
                         r.classe,
                         r.data,
@@ -462,7 +475,7 @@ try {
                     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
-                    link.download = `powercheck_feedback_${Date.now()}.csv`;
+                    link.download = `powercheck_feedback_de_${Date.now()}.csv`;
                     link.click();
                 });
             });
