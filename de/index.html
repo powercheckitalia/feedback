@@ -19,9 +19,8 @@
 </head>
 <body class="bg-gradient-to-br from-orange-50 to-orange-100 min-h-screen">
     
-    <!-- Main Container -->
     <div id="app" class="py-8 px-4">
-        <!-- Success View (nascosta inizialmente) -->
+        <!-- Success View -->
         <div id="successView" class="hidden min-h-screen flex items-center justify-center">
             <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 max-w-2xl w-full text-center">
                 <svg class="w-20 h-20 text-orange-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +39,7 @@
             </div>
         </div>
 
-        <!-- Admin View (nascosta inizialmente) -->
+        <!-- Admin View -->
         <div id="adminView" class="hidden max-w-6xl mx-auto">
             <div class="bg-white rounded-3xl shadow-xl p-8 mb-6">
                 <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
@@ -208,7 +207,6 @@
             "Weitere persönliche Anmerkungen:"
         ];
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('data').value = new Date().toISOString().split('T')[0];
             generateQRCode();
@@ -303,11 +301,9 @@
             };
 
             try {
-                // Salva nel storage locale
                 const submissionId = "response_" + Date.now() + "_" + Math.random().toString(16).slice(2);
                 await window.storage.set(submissionId, JSON.stringify(formData), true);
                 
-                // Invia al Google Sheet
                 const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbyr9y8ErZ46dBj6UHVkD1UShjL6QkRLtE2z8ARFuomq08SMyXj9O3r_Q8Dbfh98DBQJ/exec";
                 
                 const payload = {
@@ -333,7 +329,7 @@
                 document.getElementById('successView').classList.remove('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
-                console.error('Errore durante l\'invio:', error);
+                console.error('Errore:', error);
                 alert('Senden fehlgeschlagen. Bitte versuche es erneut.');
             }
         }
