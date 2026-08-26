@@ -15,11 +15,24 @@
         .btn-orange:hover {
             background: linear-gradient(135deg, #F7931E 0%, #FF6B35 100%);
         }
+        .btn-orange:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        #queueBanner {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-orange-50 to-orange-100 min-h-screen">
-    
+
     <div id="app" class="py-8 px-4">
+
+        <!-- Banner Warteschlange offline -->
+        <div id="queueBanner" class="max-w-4xl mx-auto mb-4 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-xl text-sm text-gray-700">
+            📶 <strong>Keine Verbindung:</strong> <span id="queueCount">0</span> Antwort(en) auf diesem Gerät gespeichert, werden automatisch gesendet, sobald die Verbindung wieder da ist. Bitte den Browser nach Möglichkeit nicht schließen.
+        </div>
+
         <!-- Success View -->
         <div id="successView" class="hidden min-h-screen flex items-center justify-center">
             <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 max-w-2xl w-full text-center">
@@ -27,15 +40,13 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <h2 class="text-3xl font-bold text-gray-800 mb-4">Vielen Dank! 🎉</h2>
-                <p class="text-lg text-gray-600 mb-6">Dein Feedback wurde erfolgreich übermittelt!</p>
+                <p id="successMessage" class="text-lg text-gray-600 mb-6">Dein Feedback wurde erfolgreich übermittelt!</p>
                 <div class="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-lg mb-6">
                     <p class="text-gray-700 leading-relaxed">
                         Vielen Dank für deine wertvolle Mitarbeit! Dein Feedback hilft uns, das PowerCheck Plus Projekt weiterzuentwickeln und für zukünftige Teilnehmer:innen noch hilfreicher zu gestalten.
                     </p>
                 </div>
-                <button onclick="resetForm()" class="text-orange-500 hover:text-orange-600 font-semibold">
-                    ← Zurück zum Formular
-                </button>
+                <p class="text-xs text-gray-400">Das Formular wurde nur einmal gesendet. Ein erneutes Absenden ist nicht nötig.</p>
             </div>
         </div>
 
@@ -47,27 +58,24 @@
                         <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
-                        Antworten - Dashboard 
+                        Antworten - Dashboard (lokal auf diesem Gerät)
                     </h2>
                     <button onclick="showForm()" class="text-orange-500 hover:text-orange-600 font-semibold">
                         ← Zurück zum Formular
                     </button>
                 </div>
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-xl mb-6 text-sm text-gray-700">
+                    ℹ️ Dieses Dashboard zeigt nur Antworten, die <strong>von diesem Gerät/Browser</strong> gesendet wurden (inkl. jener in der Warteschlange). Die vollständigen Daten aller Schüler:innen befinden sich im verknüpften Google Sheet.
+                </div>
 
                 <div class="grid md:grid-cols-3 gap-4 mb-6">
                     <div class="gradient-orange text-white rounded-xl p-6">
-                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
                         <div class="text-3xl font-bold" id="totalResponses">0</div>
-                        <div class="text-sm opacity-90">Antworten Gesamt</div>
+                        <div class="text-sm opacity-90">Antworten Gesamt (lokal)</div>
                     </div>
                     <button onclick="exportCSV()" class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 hover:from-green-600 hover:to-green-700 transition">
-                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                        </svg>
                         <div class="text-lg font-bold">CSV exportieren</div>
-                        <div class="text-sm opacity-90">Alle Daten herunterladen</div>
+                        <div class="text-sm opacity-90">Lokale Daten herunterladen</div>
                     </button>
                     <button onclick="loadResponses()" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 hover:from-blue-600 hover:to-blue-700 transition">
                         <div class="text-lg font-bold">Aktualisieren</div>
@@ -81,7 +89,7 @@
                 </div>
 
                 <div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Neueste Antworten</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Neueste Antworten (lokal)</h3>
                     <div id="responsesList"></div>
                 </div>
             </div>
@@ -89,7 +97,6 @@
 
         <!-- Form View -->
         <div id="formView" class="max-w-4xl mx-auto">
-            <!-- Header -->
             <div class="gradient-orange rounded-3xl shadow-2xl p-8 mb-8 text-white">
                 <div class="flex justify-between items-start mb-4 flex-wrap gap-4">
                     <div>
@@ -106,9 +113,7 @@
                 </div>
             </div>
 
-            <!-- Form -->
             <div class="bg-white rounded-3xl shadow-xl p-8">
-                <!-- Persönliche Daten -->
                 <div class="mb-8">
                     <div class="grid md:grid-cols-3 gap-4 mb-6">
                         <div>
@@ -144,10 +149,9 @@
                     </div>
                 </div>
 
-                <!-- Anleitung -->
                 <div class="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-xl mb-8">
                     <h3 class="font-bold text-gray-800 mb-3">📋 Anleitung</h3>
-                    <p class="text-gray-700 mb-2">Bitte gib für jede Aussage an, wie sehr du zustimmst, und verwende dabei folgende Skala:</p>
+                    <p class="text-gray-700 mb-2">Bitte gib für jede Aussage an, wie sehr du zustimmst. Du kannst deine Antwort jederzeit ändern, bis du auf "Feedback absenden" klickst.</p>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
                         <div class="bg-white px-3 py-2 rounded-lg text-sm"><strong>0</strong> = überhaupt nicht</div>
                         <div class="bg-white px-3 py-2 rounded-lg text-sm"><strong>1</strong> = wenig</div>
@@ -156,35 +160,36 @@
                     </div>
                 </div>
 
-                <!-- Bewertung -->
                 <div class="mb-8">
                     <h3 class="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-orange-500">Bewertung des PowerCheck Plus Projekts</h3>
                     <div id="questions"></div>
                 </div>
 
-                <!-- Offene Fragen -->
                 <div class="mb-8">
                     <h3 class="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-orange-500">Offene Fragen</h3>
                     <div id="openQuestions"></div>
                 </div>
 
-                <!-- Privacy -->
                 <div class="bg-blue-50 border-l-4 border-blue-500 p-5 rounded-xl mb-6">
                     <p class="text-sm text-gray-700">🔒 <strong>Anonymes Formular:</strong> Dieses Formular ist vollständig anonym. Die erhobenen Daten werden ausschließlich verwendet, um das PowerCheck Plus Projekt zu verbessern.</p>
                 </div>
 
-                <!-- Submit -->
-                <button onclick="submitForm()" class="w-full btn-orange text-white font-bold py-4 px-6 rounded-xl transition shadow-lg flex items-center justify-center gap-3 text-lg">
+                <button id="submitBtn" onclick="submitForm()" class="w-full btn-orange text-white font-bold py-4 px-6 rounded-xl transition shadow-lg flex items-center justify-center gap-3 text-lg">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                     </svg>
-                    Feedback absenden
+                    <span id="submitBtnText">Feedback absenden</span>
                 </button>
+                <p class="text-xs text-gray-400 text-center mt-3">Bitte nur einmal klicken: der Versand startet sofort, ein mehrfaches Klicken ist nicht nötig.</p>
             </div>
         </div>
     </div>
 
     <script>
+        const LANG = "de";
+        const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbyr9y8ErZ46dBj6UHVkD1UShjL6QkRLtE2z8ARFuomq08SMyXj9O3r_Q8Dbfh98DBQJ/exec";
+        const QUEUE_KEY = "pc_pending_de";
+
         const questions = [
             "Das PowerCheck Plus Projekt war interessant und spannend.",
             "Das Projekt hat mir geholfen, über meine schulische und berufliche Zukunft nachzudenken.",
@@ -207,12 +212,18 @@
             "Weitere persönliche Anmerkungen:"
         ];
 
+        let isSubmitting = false;
+
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('data').value = new Date().toISOString().split('T')[0];
             generateQRCode();
             renderQuestions();
             renderOpenQuestions();
+            updateQueueBanner();
+            flushQueue();
         });
+
+        window.addEventListener('online', flushQueue);
 
         function generateQRCode() {
             const url = "https://powercheckitalia.github.io/feedback/de/";
@@ -262,76 +273,116 @@
                 container.appendChild(div);
             });
         }
-        
-async function submitForm() {
-    const scuola = document.getElementById('scuola').value.trim();
-    const classe = document.getElementById('classe').value.trim();
-    const data = document.getElementById('data').value;
-    const genere = document.querySelector('input[name="genere"]:checked');
 
-    if (!scuola || !classe || !data || !genere) {
-        alert('Compila tutti i campi obbligatori!');
-        return;
-    }
-
-    const ratings = [];
-    for (let i = 0; i < questions.length; i++) {
-        const rating = document.querySelector(`input[name="q${i}"]:checked`);
-        if (!rating) {
-            alert(`Rispondi alla domanda ${i + 1}!`);
-            return;
+        function readQueue() {
+            try {
+                return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
+            } catch (e) {
+                return [];
+            }
         }
-        ratings.push(rating.value);
-    }
 
-    const openAnswers = openQuestions.map((_, i) =>
-        document.getElementById(`open${i}`).value
-    );
+        function writeQueue(arr) {
+            localStorage.setItem(QUEUE_KEY, JSON.stringify(arr));
+            updateQueueBanner();
+        }
 
-    const payload = {
-        submissionId: "pc_" + Date.now(),
-        scuola,
-        classe,
-        data,
-        genere: genere.value,
-        ratings,
-        openAnswers,
-        userAgent: navigator.userAgent,
-        lang: "it"
-    };
+        function updateQueueBanner() {
+            const q = readQueue();
+            const banner = document.getElementById('queueBanner');
+            document.getElementById('queueCount').textContent = q.length;
+            banner.style.display = q.length > 0 ? 'block' : 'none';
+        }
 
-    const ENDPOINT_URL =
-        "https://script.google.com/macros/s/AKfycbyr9y8ErZ46dBj6UHVkD1UShjL6QkRLtE2z8ARFuomq08SMyXj9O3r_Q8Dbfh98DBQJ/exec";
-
-    try {
-        await fetch(ENDPOINT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
-        });
-
-        // 👉 MOSTRA SUCCESSO SEMPRE
-        document.getElementById('formView').classList.add('hidden');
-        document.getElementById('successView').classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    } catch (error) {
-        console.error(error);
-        alert("Errore durante l'invio. Riprova.");
-    }
-}
-        function resetForm() {
-            document.getElementById('successView').classList.add('hidden');
-            document.getElementById('formView').classList.remove('hidden');
-            document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => el.value = '');
-            document.getElementById('data').value = new Date().toISOString().split('T')[0];
-            document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
-            document.querySelectorAll('.rating-label').forEach(l => {
-                l.classList.remove('bg-orange-500', 'border-orange-500', 'text-white');
-                l.classList.add('bg-white', 'border-gray-200');
+        async function sendPayload(payload) {
+            await fetch(ENDPOINT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
             });
+        }
+
+        async function flushQueue() {
+            const queue = readQueue();
+            if (queue.length === 0) return;
+            const remaining = [];
+            for (const payload of queue) {
+                try {
+                    await sendPayload(payload);
+                } catch (e) {
+                    remaining.push(payload);
+                }
+            }
+            writeQueue(remaining);
+        }
+
+        async function submitForm() {
+            if (isSubmitting) return;
+
+            const scuola = document.getElementById('scuola').value.trim();
+            const classe = document.getElementById('classe').value.trim();
+            const data = document.getElementById('data').value;
+            const genere = document.querySelector('input[name="genere"]:checked');
+
+            if (!scuola || !classe || !data || !genere) {
+                alert('Bitte alle Pflichtfelder ausfüllen!');
+                return;
+            }
+
+            const ratings = [];
+            for (let i = 0; i < questions.length; i++) {
+                const rating = document.querySelector(`input[name="q${i}"]:checked`);
+                if (!rating) {
+                    alert(`Bitte Frage ${i + 1} beantworten!`);
+                    return;
+                }
+                ratings.push(rating.value);
+            }
+
+            const openAnswers = openQuestions.map((_, i) => document.getElementById(`open${i}`).value);
+
+            const payload = {
+                submissionId: "pc_" + LANG + "_" + Date.now() + "_" + Math.random().toString(16).slice(2),
+                scuola, classe, data,
+                genere: genere.value,
+                ratings, openAnswers,
+                userAgent: navigator.userAgent,
+                lang: LANG,
+                timestamp: Date.now()
+            };
+
+            isSubmitting = true;
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('submitBtnText');
+            btn.disabled = true;
+            btnText.textContent = 'Wird gesendet...';
+
+            let queued = false;
+            try {
+                await sendPayload(payload);
+            } catch (error) {
+                console.error(error);
+                const queue = readQueue();
+                queue.push(payload);
+                writeQueue(queue);
+                queued = true;
+            }
+
+            try {
+                await window.storage.set('response_' + payload.submissionId, JSON.stringify(payload), true);
+            } catch (e) { /* lokaler Speicher außerhalb von Claude nicht verfügbar: blockiert den Versand nicht */ }
+
+            document.getElementById('successMessage').textContent = queued
+                ? "Dein Feedback wurde gespeichert und wird automatisch gesendet, sobald wieder eine Verbindung besteht."
+                : "Dein Feedback wurde erfolgreich übermittelt!";
+            document.getElementById('formView').classList.add('hidden');
+            document.getElementById('successView').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            isSubmitting = false;
+            btn.disabled = false;
+            btnText.textContent = 'Feedback absenden';
         }
 
         function showForm() {
@@ -351,27 +402,21 @@ async function submitForm() {
             try {
                 const result = await window.storage.list('response_', true);
                 const responses = [];
-                
                 if (result && result.keys) {
                     for (const key of result.keys) {
                         try {
                             const data = await window.storage.get(key, true);
                             if (data) responses.push(JSON.parse(data.value));
-                        } catch (e) {
-                            console.error('Error loading response:', e);
-                        }
+                        } catch (e) { console.error('Error loading response:', e); }
                     }
                 }
-
                 responses.sort((a, b) => b.timestamp - a.timestamp);
-                
                 document.getElementById('totalResponses').textContent = responses.length;
-                
                 if (responses.length > 0) {
                     displayStats(responses);
                     displayResponses(responses);
                 } else {
-                    document.getElementById('responsesList').innerHTML = '<div class="text-center py-12 text-gray-500">Noch keine Antworten vorhanden. Teile das Formular mit den Schüler:innen! 📱</div>';
+                    document.getElementById('responsesList').innerHTML = '<div class="text-center py-12 text-gray-500">Noch keine lokalen Antworten vorhanden. 📱</div>';
                     document.getElementById('statsContainer').classList.add('hidden');
                 }
             } catch (error) {
@@ -383,12 +428,10 @@ async function submitForm() {
             const statsContainer = document.getElementById('statsContainer');
             const statsGrid = document.getElementById('statsGrid');
             statsContainer.classList.remove('hidden');
-            
             const avgRatings = questions.map((_, i) => {
                 const sum = responses.reduce((acc, r) => acc + parseInt(r.ratings[i] || 0), 0);
                 return (sum / responses.length).toFixed(2);
             });
-
             statsGrid.innerHTML = avgRatings.map((avg, i) => `
                 <div class="bg-white rounded-lg p-4">
                     <div class="text-sm text-gray-600 mb-2">Q${i + 1}</div>
@@ -414,9 +457,7 @@ async function submitForm() {
                         <span class="text-sm text-gray-500">${new Date(r.timestamp).toLocaleDateString('de-DE')}</span>
                     </div>
                     <div class="flex gap-2 flex-wrap">
-                        ${r.ratings.map((rating, i) => `
-                            <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-semibold">Q${i + 1}: ${rating}</span>
-                        `).join('')}
+                        ${r.ratings.map((rating, i) => `<span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-semibold">Q${i + 1}: ${rating}</span>`).join('')}
                     </div>
                 </div>
             `).join('');
@@ -428,33 +469,18 @@ async function submitForm() {
                     alert('Keine Antworten zum Exportieren vorhanden!');
                     return;
                 }
-
-                Promise.all(result.keys.map(key => 
+                Promise.all(result.keys.map(key =>
                     window.storage.get(key, true).then(data => data ? JSON.parse(data.value) : null)
                 )).then(responses => {
                     responses = responses.filter(r => r !== null);
-                    
-                    const headers = [
-                        'Ausfüllungsdatum', 'Schule', 'Klasse', 'Datum', 'Geschlecht',
+                    const headers = ['Ausfüllungsdatum', 'Schule', 'Klasse', 'Datum', 'Geschlecht',
                         ...questions.map((_, i) => `Q${i + 1}`),
-                        ...openQuestions.map((_, i) => `Offen ${i + 1}`)
-                    ];
-
+                        ...openQuestions.map((_, i) => `Offen ${i + 1}`)];
                     const rows = responses.map(r => [
-                        new Date(r.timestamp).toLocaleString('de-DE'),
-                        r.scuola,
-                        r.classe,
-                        r.data,
-                        r.genere,
-                        ...r.ratings,
-                        ...r.openAnswers
+                        new Date(r.timestamp).toLocaleString('de-DE'), r.scuola, r.classe, r.data, r.genere,
+                        ...r.ratings, ...r.openAnswers
                     ]);
-
-                    const csv = [
-                        headers.join(','),
-                        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-                    ].join('\n');
-
+                    const csv = [headers.join(','), ...rows.map(row => row.map(cell => `"${cell}"`).join(','))].join('\n');
                     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
