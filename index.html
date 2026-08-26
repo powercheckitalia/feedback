@@ -230,6 +230,8 @@
             document.getElementById('qrCode').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&bgcolor=FF6B35&color=FFFFFF`;
         }
 
+        const answers = {};
+
         function renderQuestions() {
             const container = document.getElementById('questions');
             questions.forEach((q, i) => {
@@ -237,12 +239,11 @@
                 div.className = 'mb-6 p-5 bg-gray-50 rounded-xl hover:bg-orange-50 transition';
                 div.innerHTML = `
                     <p class="font-medium text-gray-800 mb-4">${i + 1}. ${q}</p>
-                    <div class="flex gap-3 flex-wrap">
+                    <div class="flex gap-3 flex-wrap" id="qgroup${i}">
                         ${[0,1,2,3].map(v => `
-                            <label class="rating-label flex items-center justify-center px-6 py-3 border-2 rounded-xl cursor-pointer transition bg-white border-gray-200 hover:border-orange-300">
-                                <input type="radio" name="q${i}" value="${v}" required class="sr-only" onclick="handleRatingClick(this)">
+                            <button type="button" class="rating-label flex items-center justify-center px-6 py-3 border-2 rounded-xl cursor-pointer transition bg-white border-gray-200 hover:border-orange-300" data-value="${v}" onclick="selectRating(${i}, ${v})">
                                 <span class="font-bold text-lg">${v}</span>
-                            </label>
+                            </button>
                         `).join('')}
                     </div>
                 `;
@@ -250,24 +251,26 @@
             });
         }
 
-        function handleRatingClick(input) {
-            const wasSelected = input.dataset.selected === 'true';
-            const group = document.getElementsByName(input.name);
-            group.forEach(r => {
-                r.dataset.selected = 'false';
-                const l = r.closest('.rating-label');
-                l.classList.remove('bg-orange-500', 'border-orange-500', 'text-white');
-                l.classList.add('bg-white', 'border-gray-200');
-            });
-            if (wasSelected) {
-                input.checked = false;
+        function selectRating(i, value) {
+            if (answers[i] === value) {
+                delete answers[i];
             } else {
-                input.checked = true;
-                input.dataset.selected = 'true';
-                const label = input.closest('.rating-label');
-                label.classList.remove('bg-white', 'border-gray-200');
-                label.classList.add('bg-orange-500', 'border-orange-500', 'text-white');
+                answers[i] = value;
             }
+            updateRatingButtons(i);
+        }
+
+        function updateRatingButtons(i) {
+            document.querySelectorAll(`#qgroup${i} .rating-label`).forEach(btn => {
+                const v = parseInt(btn.dataset.value, 10);
+                if (answers[i] === v) {
+                    btn.classList.remove('bg-white', 'border-gray-200');
+                    btn.classList.add('bg-orange-500', 'border-orange-500', 'text-white');
+                } else {
+                    btn.classList.remove('bg-orange-500', 'border-orange-500', 'text-white');
+                    btn.classList.add('bg-white', 'border-gray-200');
+                }
+            });
         }
 
         function renderOpenQuestions() {
@@ -343,12 +346,11 @@
 
             const ratings = [];
             for (let i = 0; i < questions.length; i++) {
-                const rating = document.querySelector(`input[name="q${i}"]:checked`);
-                if (!rating) {
+                if (answers[i] === undefined) {
                     alert(`Rispondi alla domanda ${i + 1}!`);
                     return;
                 }
-                ratings.push(rating.value);
+                ratings.push(String(answers[i]));
             }
 
             const openAnswers = openQuestions.map((_, i) => document.getElementById(`open${i}`).value);
